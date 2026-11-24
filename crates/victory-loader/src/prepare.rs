@@ -278,6 +278,7 @@ mod tests {
         );
     }
 
+    #[cfg(windows)]
     #[test]
     fn strips_guard_cf_and_force_integrity() {
         let mut original = std::fs::read(std::env::current_exe().unwrap()).unwrap();

@@ -163,7 +163,12 @@ mod tests {
             cache_dir: Some("cache-from-file".into()),
             ..Default::default()
         };
-        let env = |k: &str| (k == "VICTORY_GAME_DIR").then(|| OsString::from("from-env"));
+        let env = |k: &str| match k {
+            "VICTORY_GAME_DIR" => Some(OsString::from("from-env")),
+            "XDG_DATA_HOME" => Some(OsString::from("/xdg/share")),
+            "XDG_CACHE_HOME" => Some(OsString::from("/xdg/cache")),
+            _ => None,
+        };
         let cfg = Config::resolve(file, None, env).unwrap();
         assert_eq!(cfg.game_dir.unwrap(), PathBuf::from("from-env"));
         assert_eq!(cfg.cache_dir, PathBuf::from("cache-from-file"));
@@ -175,7 +180,12 @@ mod tests {
             game_dir: Some("from-file".into()),
             ..Default::default()
         };
-        let env = |k: &str| (k == "VICTORY_GAME_DIR").then(OsString::new);
+        let env = |k: &str| match k {
+            "VICTORY_GAME_DIR" => Some(OsString::new()),
+            "XDG_DATA_HOME" => Some(OsString::from("/xdg/share")),
+            "XDG_CACHE_HOME" => Some(OsString::from("/xdg/cache")),
+            _ => None,
+        };
         let cfg = Config::resolve(file, None, env).unwrap();
         assert_eq!(cfg.game_dir.unwrap(), PathBuf::from("from-file"));
     }
